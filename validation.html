@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Validate BVN</title>
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+<h1>Customer Onboarding</h1>
+<section>
+    <h4>Welcome John Doe,</h4>
+    <p>To complete your onboarding process, we need to validate your BVN</p>
+
+    <form onsubmit="validateBVN(event)" id="validation-form">
+        <label>Enter your BVN</label>
+        <input name="bvn">
+        <button>Validate</button>
+    </form>
+
+    <p id="success-message"></p>
+    <p id="error-message"></p>
+</section>
+
+<script>
+    function validateBVN(e) {
+        e.preventDefault();
+        document.getElementById('error-message').innerHTML = '';
+        document.getElementById('success-message').innerHTML = '';
+
+
+        var SEC_KEY = 'FLWSECK-f107bdb0d96417fc23619e9b609bd9d2-X';
+        var PUB_KEY = 'FLWPUBK-71c514c761bad596e50fec53f5ea24f1-X';
+        var bvn = e.target.elements[0].value;
+        // validateURL = 'https://ravesandboxapi.flutterwave.com/v2/banks/NG?public_key='+PUB_KEY;
+        var validateURL = 'https://ravesandboxapi.flutterwave.com/v2/kyc/bvn/' + bvn + '?seckey=' + SEC_KEY;
+        fetch(validateURL)
+            .then(function (res) {
+                return res.json()
+            })
+            .then(function (a) {
+                document.getElementById('validation-form').style.display = 'none';
+                document.getElementById('success-message').innerHTML = 'Validation was successful!';
+                console.log(a)
+
+            })
+            .catch(function (err) {
+                document.getElementById('error-message').innerHTML = 'Validation was not successful, please try again.';
+                console.error(err)
+            });
+
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Ride Payment</title>
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+
+<h1>Ride Payment</h1>
+
+<section>
+    <h4>How Flutterwave can help</h4>
+    <p>
+        Flutterwave has a split payment feature that can help avoid mixing up commissions from rides taken by
+        independent riders. The ride company can create sub-accounts via the rave API or dashboard and specify their own
+        commission. And then when making payments via the Rave API, there should be a sub-accounts property on the
+        parameters object parameters where the rider's sub-account id will be added.
+    </p>
+</section>
+<section>
+    <h4>Hello John Doe,</h4>
+
+    <p>Your ride is complete!</p>
+    <p>Total bill: <strong>N4000</strong></p>
+    <button id="pay-button" onclick="payForRide(event, 4000)">Pay Now</button>
+
+    <p id="success-message"></p>
+    <p id="error-message"></p>
+
+</section>
+
+<script src="https://ravesandboxapi.flutterwave.com/flwv3-pug/getpaidx/api/flwpbf-inline.js"></script>
+<script>
+    function payForRide(e, amount) {
+        e.preventDefault();
+
+        var SEC_KEY = 'FLWSECK-f107bdb0d96417fc23619e9b609bd9d2-X';
+        var PUB_KEY = 'FLWPUBK-71c514c761bad596e50fec53f5ea24f1-X';
+
+        var x = getpaidSetup({
+            PBFPubKey: PUB_KEY,
+            customer_email: "user@example.com",
+            amount: amount,
+            customer_phone: "234099940409",
+            currency: "NGN",
+            txref: "rave-123456",
+            subaccounts: [
+                {
+                    id: "RS_6139E8E850100CF621C9139B520EA453" // This assumes you have setup your commission on the dashboard.
+                }
+            ],
+            meta: [{
+                metaname: "rideSN",
+                metavalue: "RS1234"
+            }],
+            onclose: function () {
+            },
+            callback: function (response) {
+                if (
+                    response.tx.chargeResponseCode == "00" ||
+                    response.tx.chargeResponseCode == "0"
+                ) {
+                    document.getElementById('pay-button').style.display = 'none';
+                    document.getElementById('success-message').innerHTML = 'The transaction was successful!'
+                } else {
+                    document.getElementById('error-message').innerHTML = 'The transaction failed, please try again.'
+                }
+
+                x.close();
+            }
+        });
+    }
+</script>
+</body>
+</html>
